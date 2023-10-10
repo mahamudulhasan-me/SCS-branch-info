@@ -7,34 +7,16 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useState } from "react";
+import { ScaleLoader } from "react-spinners";
 
 const columns = [
   { id: "branchType", label: "Branch Type", minWidth: 170 },
   { id: "officeName", label: "Office Name", minWidth: 170 },
   { id: "code", label: "\u00a0Code", minWidth: 100 },
-  {
-    id: "authorityContacts",
-    label: "Authority Contacts",
-    minWidth: 170,
-    // align: "right",
-    // format: (value) => value.toLocaleString("en-US"),
-  },
-
-  {
-    id: "serviceAndContacts",
-    label: "Service",
-    minWidth: 170,
-  },
-  {
-    id: "address",
-    label: "Address",
-    minWidth: 170,
-  },
-  {
-    id: "remarks",
-    label: "Remarks",
-    minWidth: 170,
-  },
+  { id: "authorityContacts", label: "Authority Contacts", minWidth: 170 },
+  { id: "serviceAndContacts", label: "Service & Contacts", minWidth: 170 },
+  { id: "address", label: "Address", minWidth: 170 },
+  { id: "remarks", label: "Remarks", minWidth: 170 },
 ];
 
 function createData(
@@ -42,7 +24,8 @@ function createData(
   officeName,
   code,
   authorityContacts,
-  serviceAndContacts,
+  service,
+  contacts,
   address,
   remarks
 ) {
@@ -51,7 +34,8 @@ function createData(
     officeName,
     code,
     authorityContacts,
-    serviceAndContacts,
+    service,
+    contacts,
     address,
     remarks,
   };
@@ -69,7 +53,11 @@ const BranchDataTable = ({ branchData }) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  console.log(branchData);
+
+  const formatServiceAndContacts = (service, contacts) => {
+    return `${service}:<br />${contacts}`;
+  };
+
   const rows = branchData.map((branchInfo) => {
     const { contact, branch, service } = branchInfo;
     return createData(
@@ -78,6 +66,7 @@ const BranchDataTable = ({ branchData }) => {
       branch?.code,
       contact,
       service.service_name,
+      contact,
       branch?.address,
       branch?.remarks || "N/A"
     );
@@ -91,8 +80,8 @@ const BranchDataTable = ({ branchData }) => {
             <TableRow>
               {columns.map((column) => (
                 <TableCell
+                  align="center"
                   key={column.id}
-                  align={column.align}
                   style={{ minWidth: column.minWidth }}
                   className="bg-violet-200 font-bold"
                 >
@@ -102,26 +91,48 @@ const BranchDataTable = ({ branchData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            {branchData &&
+              rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, rowIndex) => {
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={rowIndex}
+                    >
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align="center">
+                            {column.id === "serviceAndContacts" ? (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: formatServiceAndContacts(
+                                    row.service,
+                                    row.contacts
+                                  ),
+                                }}
+                              />
+                            ) : column.format && typeof value === "number" ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
+        {branchData.length === 0 && (
+          <div className="w-full flex justify-center items-center py-10">
+            <ScaleLoader color="#36d7b7" />
+          </div>
+        )}
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
