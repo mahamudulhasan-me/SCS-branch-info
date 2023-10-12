@@ -24,8 +24,7 @@ function createData(
   officeName,
   code,
   authorityContacts,
-  service,
-  contacts,
+  serviceAndContacts,
   address,
   remarks
 ) {
@@ -34,8 +33,7 @@ function createData(
     officeName,
     code,
     authorityContacts,
-    service,
-    contacts,
+    serviceAndContacts,
     address,
     remarks,
   };
@@ -54,21 +52,29 @@ const BranchDataTable = ({ branchData }) => {
     setPage(0);
   };
 
-  const formatServiceAndContacts = (service, contacts) => {
-    return `${service}:<br />${contacts}`;
-  };
-
   const rows = branchData.map((branchInfo) => {
-    const { contact, branch, service } = branchInfo;
+    const { name, code, type, incharge, address, branch_services, remark } =
+      branchInfo;
+
+    const serviceAndContacts = branch_services.map((services) => {
+      const { id, contact, service } = services;
+      return (
+        <>
+          <span key={id}>
+            {service?.service_name}: <br /> {contact}
+          </span>{" "}
+          <br />
+        </>
+      );
+    });
     return createData(
-      "Branch",
-      branch?.name,
-      branch?.code,
-      contact,
-      service.service_name,
-      contact,
-      branch?.address,
-      branch?.remarks || "N/A"
+      type,
+      name,
+      code,
+      incharge,
+      serviceAndContacts,
+      address,
+      remark || "N/A"
     );
   });
 
@@ -106,20 +112,9 @@ const BranchDataTable = ({ branchData }) => {
                         const value = row[column.id];
                         return (
                           <TableCell key={column.id} align="center">
-                            {column.id === "serviceAndContacts" ? (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: formatServiceAndContacts(
-                                    row.service,
-                                    row.contacts
-                                  ),
-                                }}
-                              />
-                            ) : column.format && typeof value === "number" ? (
-                              column.format(value)
-                            ) : (
-                              value
-                            )}
+                            {column.format && typeof value === "number"
+                              ? column.format(value)
+                              : value}
                           </TableCell>
                         );
                       })}

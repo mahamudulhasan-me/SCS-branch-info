@@ -1,8 +1,6 @@
-import { Button } from "@mui/material";
+import scsLogo from "@/public/scsLogo.jpg";
 import Image from "next/image";
 import Link from "next/link";
-import { FaUserCircle } from "react-icons/fa";
-import scsLogo from "../assets/scsLogo.jpg";
 
 const Header = () => {
   return (
@@ -10,14 +8,7 @@ const Header = () => {
       <Link href="/">
         <Image width={50} height={20} src={scsLogo} alt="SCS Logo" />
       </Link>
-      <div className="flex items-center gap-4 ">
-        <Button className="bg-[#0C4A9A] hover:bg-[#3C74BD] text-white font-semibold py-2 px-4">
-          Pickup Request
-        </Button>
-        <div className="ring rounded-full text-2xl p-0.5 ring-[#0C7D83]">
-          <FaUserCircle size={30} color="#0C7D83" />
-        </div>
-      </div>
+      <div className="flex items-center gap-4 "></div>
     </div>
   );
 };

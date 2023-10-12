@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   return (
-    <main className={inter.className}>
+    <main>
       <ToastContainer position="bottom-left" autoClose={5000} />
       <Header />
       <BranchInfoBySearch />
