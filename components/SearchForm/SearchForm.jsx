@@ -43,6 +43,7 @@ const SearchForm = () => {
       />
 
       <Button
+        variant="contained"
         type="submit"
         className="bg-[#0C4A9A] hover:bg-[#3C74BD] text-white font-semibold py-2 px-4 w-1/2 "
       >
