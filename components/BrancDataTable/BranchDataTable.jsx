@@ -40,6 +40,7 @@ function createData(
 }
 
 const BranchDataTable = ({ branchData }) => {
+  console.log(branchData);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -56,7 +57,7 @@ const BranchDataTable = ({ branchData }) => {
     const { name, code, type, incharge, address, branch_services, remark } =
       branchInfo;
 
-    const serviceAndContacts = branch_services.map((services) => {
+    const serviceAndContacts = branch_services?.map((services) => {
       const { id, contact, service } = services;
       return (
         <>
