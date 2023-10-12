@@ -86,10 +86,12 @@ const BranchDataTable = ({ branchData }) => {
             <TableRow>
               {columns.map((column) => (
                 <TableCell
-                  className="bg-gray-300 font-bold"
                   align="center"
                   key={column.id}
-                  style={{ minWidth: column.minWidth }}
+                  style={{
+                    minWidth: column.minWidth,
+                    backgroundColor: "#0C4A9A",
+                  }}
                 >
                   {column.label}
                 </TableCell>
