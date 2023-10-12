@@ -80,7 +80,14 @@ const BranchDataTable = ({ branchData }) => {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <TableContainer
+        sx={{
+          maxHeight: 440,
+          overflowY: "auto",
+          "::-webkit-scrollbar": { width: "0em" },
+          "::-webkit-scrollbar-thumb": { backgroundColor: "transparent" },
+        }}
+      >
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -90,7 +97,8 @@ const BranchDataTable = ({ branchData }) => {
                   key={column.id}
                   style={{
                     minWidth: column.minWidth,
-                    backgroundColor: "#0C4A9A",
+                    backgroundColor: "#FDF4F5",
+                    fontWeight: "bold",
                   }}
                 >
                   {column.label}
@@ -139,7 +147,7 @@ const BranchDataTable = ({ branchData }) => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        className="bg-violet-100"
+        className="bg-[#FDF4F5]"
       />
     </Paper>
   );

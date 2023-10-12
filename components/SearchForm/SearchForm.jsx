@@ -18,7 +18,7 @@ const SearchForm = () => {
   }, []);
 
   return (
-    <form className="w-2/3 flex justify-center items-center md:gap-10 gap-5 mb-8">
+    <form className="lg:w-2/3 flex lg:flex-nowrap flex-wrap justify-center items-center md:gap-10 gap-5 mb-8">
       <Autocomplete
         fullWidth
         size="small"

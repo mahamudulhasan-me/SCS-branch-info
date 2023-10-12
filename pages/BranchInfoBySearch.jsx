@@ -14,7 +14,9 @@ const BranchInfoBySearch = () => {
   return (
     <div className="px-[5%] mt-16">
       <SearchForm />
-      <BranchDataTable branchData={branchData} />
+      <div className="my-10">
+        <BranchDataTable branchData={branchData} />
+      </div>
     </div>
   );
 };
