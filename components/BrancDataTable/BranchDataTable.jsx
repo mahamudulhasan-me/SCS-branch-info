@@ -84,7 +84,7 @@ const BranchDataTable = ({ branchData }) => {
         sx={{
           maxHeight: 440,
           overflow: "auto",
-          "::-webkit-scrollbar": { width: "2px", height: "0.5rem" },
+          "::-webkit-scrollbar": { width: "2px", height: "3px" },
           "::-webkit-scrollbar-thumb": {
             backgroundColor: "#888",
           },
