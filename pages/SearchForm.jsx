@@ -32,18 +32,24 @@ const SearchForm = ({ setBranchData }) => {
   };
 
   const getSearchData = async () => {
-    if (selectedBranchId || selectedServiceId) {
-      if (selectedBranchId) {
-        const searchBranchData = await axiosInstance.get(
-          `/get-branchwise-service/${selectedBranchId}`
-        );
-        setBranchData(searchBranchData.data.data);
-      } else if (selectedServiceId) {
-        const searchServiceData = await axiosInstance.get(
-          `/get-servicewise-service/${selectedServiceId}`
-        );
-        setBranchData(searchServiceData.data.data);
+    try {
+      if (selectedBranchId || selectedServiceId) {
+        if (selectedBranchId) {
+          const searchBranchData = await axiosInstance.get(
+            `/get-branchwise-service/${selectedBranchId}`
+          );
+          setBranchData(searchBranchData.data.data);
+        } else if (selectedServiceId) {
+          const searchServiceData = await axiosInstance.get(
+            `/get-servicewise-service/${selectedServiceId}`
+          );
+          setBranchData(searchServiceData.data.data);
+        }
       }
+    } catch (error) {
+      // Handle errors here
+      console.error("Error fetching search data:", error);
+      // You can also set an error state or display an error message to the user
     }
   };
 
