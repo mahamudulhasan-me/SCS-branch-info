@@ -89,7 +89,7 @@ const BranchDataTable = ({ branchData }) => {
                   align="center"
                   key={column.id}
                   style={{ minWidth: column.minWidth }}
-                  className="bg-violet-200 font-bold"
+                  className="bg-red-200 font-bold"
                 >
                   {column.label}
                 </TableCell>
