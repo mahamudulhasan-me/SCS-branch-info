@@ -83,9 +83,11 @@ const BranchDataTable = ({ branchData }) => {
       <TableContainer
         sx={{
           maxHeight: 440,
-          overflowY: "auto",
-          "::-webkit-scrollbar": { width: "0em" },
-          "::-webkit-scrollbar-thumb": { backgroundColor: "transparent" },
+          overflow: "auto",
+          "::-webkit-scrollbar": { width: "2px", height: "0.5rem" },
+          "::-webkit-scrollbar-thumb": {
+            backgroundColor: "#888",
+          },
         }}
       >
         <Table stickyHeader aria-label="sticky table">
