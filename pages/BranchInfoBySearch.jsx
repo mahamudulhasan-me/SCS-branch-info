@@ -1,7 +1,8 @@
 import BranchDataTable from "@/components/BrancDataTable/BranchDataTable";
-import SearchForm from "@/components/SearchForm/SearchForm";
+
 import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
+import SearchForm from "./SearchForm";
 
 const BranchInfoBySearch = () => {
   const [branchData, setBranchData] = useState([]);

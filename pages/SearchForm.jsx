@@ -32,14 +32,6 @@ const SearchForm = ({ setBranchData }) => {
   };
 
   const getSearchData = async () => {
-    console.log({
-      serviceResult,
-      selectedBranchId,
-      selectedServiceId,
-      branchResult,
-      searchResult,
-    });
-
     if (selectedBranchId || selectedServiceId) {
       if (selectedBranchId) {
         const searchBranchData = await axiosInstance.get(
