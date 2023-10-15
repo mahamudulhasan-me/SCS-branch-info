@@ -1,6 +1,5 @@
 import BranchDataTable from "@/components/BrancDataTable/BranchDataTable";
 import SearchForm from "@/components/SearchForm/SearchForm";
-
 import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
 
@@ -10,7 +9,7 @@ const BranchInfoBySearch = () => {
 
   useEffect(() => {
     axiosInstance.get("/get-branch-contacts-list").then((res) => {
-      setBranchData(res.data[1]);
+      setBranchData(res.data.data);
     });
   }, []);
 

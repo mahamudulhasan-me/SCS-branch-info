@@ -12,16 +12,20 @@ const SearchForm = ({ setBranchData, branchData }) => {
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    // fetch all branch name data
-    axiosInstance.get("/get-branches").then((res) => {
-      setBranches(res.data[1].map((branch) => branch));
-    });
-    // fetch all service data
-    axiosInstance.get("/get-services").then((res) => {
-      setServices(res.data[1].map((service) => service));
-    });
+    // axiosInstance.get("/get-services").then((res) => {
+    //   console.log(res);
+    // });
+    // // fetch all branch name data
+    // axiosInstance.get("/get-branches").then((res) => {
+    //   setBranches(res.data[1].map((branch) => branch));
+    // });
+    // // fetch all service data
+    // axiosInstance.get("/get-services").then((res) => {
+    //   setServices(res.data[1].map((service) => service));
+    // });
   }, []);
 
+  console.log(branches);
   const handleBranchChange = (event, newValue) => {
     setSelectedBranch(newValue);
     setSelectedBranchId(newValue?.id);
