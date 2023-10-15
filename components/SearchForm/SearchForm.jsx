@@ -35,14 +35,19 @@ const SearchForm = ({ setBranchData, branchData }) => {
   const getSearchData = async () => {
     try {
       if (selectedBranchId || selectedServiceId) {
-        if (selectedBranchId) {
+        if (selectedBranchId && selectedServiceId) {
+          const searchBranchAndServiceData = await axiosInstance.get(
+            `/get-branch-contacts-list?branch_id=${selectedBranchId}&service_id=${selectedServiceId}`
+          );
+          setBranchData(searchBranchAndServiceData.data.data);
+        } else if (selectedBranchId) {
           const searchBranchData = await axiosInstance.get(
-            `/get-branchwise-service/${selectedBranchId}`
+            `/get-branch-contacts-list?branch_id=${selectedBranchId}`
           );
           setBranchData(searchBranchData.data.data);
         } else if (selectedServiceId) {
           const searchServiceData = await axiosInstance.get(
-            `/get-servicewise-service/${selectedServiceId}`
+            `/get-branch-contacts-list?service_id=${selectedServiceId}`
           );
           setBranchData(searchServiceData.data.data);
         }

@@ -9,7 +9,7 @@ const BranchInfoBySearch = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    axiosInstance.get("/get-branch-contacts").then((res) => {
+    axiosInstance.get("/get-branch-contacts-list").then((res) => {
       setBranchData(res.data[1]);
     });
   }, []);
