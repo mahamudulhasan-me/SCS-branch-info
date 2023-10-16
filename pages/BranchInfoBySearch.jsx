@@ -1,5 +1,4 @@
 import BranchDataTable from "@/components/BrancDataTable/BranchDataTable";
-import SearchForm from "@/components/SearchForm/SearchForm";
 import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
 
@@ -14,10 +13,7 @@ const BranchInfoBySearch = () => {
 
   return (
     <div className="px-[5%] mt-16">
-      <SearchForm setBranchData={setBranchData} />
-      <div className="my-10">
-        <BranchDataTable branchData={branchData} />
-      </div>
+      <BranchDataTable branchData={branchData} setBranchData={setBranchData} />
     </div>
   );
 };

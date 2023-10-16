@@ -2,7 +2,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const SearchForm = ({ setBranchData }) => {
+const SearchForm = ({ setSearchedBranchData, branchData, setSearchTerm }) => {
   const [branches, setBranches] = useState([]);
   const [services, setServices] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -24,11 +24,13 @@ const SearchForm = ({ setBranchData }) => {
   const handleBranchChange = (event, newValue) => {
     setSelectedBranch(newValue);
     setSelectedBranchId(newValue?.id);
+    setSearchTerm("");
   };
 
   const handleServiceChange = (event, newValue) => {
     setSelectedService(newValue);
     setSelectedServiceId(newValue?.service_id);
+    setSearchTerm("");
   };
 
   const getSearchData = async () => {
@@ -39,19 +41,22 @@ const SearchForm = ({ setBranchData }) => {
             `/get-branch-contacts-list?branch_id=${selectedBranchId}&service_id=${selectedServiceId}`
           );
 
-          setBranchData(searchBranchAndServiceData.data.data);
+          setSearchedBranchData(searchBranchAndServiceData.data.data);
         } else if (selectedBranchId) {
           const searchBranchData = await axiosInstance.get(
             `/get-branch-contacts-list?branch_id=${selectedBranchId}`
           );
-          setBranchData(searchBranchData.data.data);
+          setSearchedBranchData(searchBranchData.data.data);
         } else if (selectedServiceId) {
           const searchServiceData = await axiosInstance.get(
             `/get-branch-contacts-list?service_id=${selectedServiceId}`
           );
-          setBranchData(searchServiceData.data.data);
+          setSearchedBranchData(searchServiceData.data.data);
         }
       }
+      //  else {
+      //   setSearchedBranchData([...branchData]);
+      // }
     } catch (error) {
       // Handle errors here
       console.error("Error fetching search data:", error);
@@ -67,9 +72,9 @@ const SearchForm = ({ setBranchData }) => {
     getSearchData();
   };
   return (
-    <div className="flex justify-between items-center  mb-6">
+    <>
       <form
-        className="lg:w-2/3 w-full grid lg:grid-cols-3 grid-cols-1  justify-center items-center md:gap-10 gap-5"
+        className=" w-full grid lg:grid-cols-3 grid-cols-1  justify-center items-center md:gap-10 gap-5"
         onSubmit={handleSubmit}
       >
         <Autocomplete
@@ -109,7 +114,7 @@ const SearchForm = ({ setBranchData }) => {
           Search
         </Button>
       </form>
-    </div>
+    </>
   );
 };
 

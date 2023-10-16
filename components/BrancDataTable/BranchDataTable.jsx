@@ -9,9 +9,10 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import { ScaleLoader } from "react-spinners";
+import SearchForm from "../SearchForm/SearchForm";
 
 const columns = [
-  { id: "branchType", label: "Branch Type", minWidth: 170 },
+  { id: "branchType", label: "Branch Type", minWidth: 120 },
   { id: "officeName", label: "Office Name", minWidth: 170 },
   { id: "code", label: "\u00a0Code", minWidth: 100 },
   { id: "authorityContacts", label: "Authority Contacts", minWidth: 170 },
@@ -44,10 +45,15 @@ const BranchDataTable = ({ branchData }) => {
   // state variables
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(2000);
+  const [searchedBranchData, setSearchedBranchData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    // Update searchedBranchData whenever branchData changes
+    setSearchedBranchData([...branchData]);
+  }, [branchData, searchedBranchData]); // This will trigger the effect whenever branchData changes
   // Handle page change
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -59,7 +65,7 @@ const BranchDataTable = ({ branchData }) => {
     setPage(0);
   };
 
-  const rows = branchData.map((branchInfo) => {
+  const rows = searchedBranchData.map((branchInfo) => {
     const { name, code, type, incharge, address, branch_services, remark } =
       branchInfo;
 
@@ -113,7 +119,7 @@ const BranchDataTable = ({ branchData }) => {
 
   // Effect to handle error messages and loading state
   useEffect(() => {
-    if (branchData.length === 0) {
+    if (searchedBranchData.length === 0) {
       setError("This Service is Not Available in This Branch");
     } else if (filteredRows.length === 0) {
       setError("Search Not Match");
@@ -121,23 +127,32 @@ const BranchDataTable = ({ branchData }) => {
       setError("");
       setLoading(false);
     }
-  }, [branchData, filteredRows]);
+  }, [searchedBranchData, filteredRows]);
 
   return (
     <>
-      <TextField
-        className="float-right mb-4"
-        size="small"
-        label="Search"
-        variant="outlined"
-        placeholder="Search Anything"
-        value={searchTerm}
-        onChange={handleSearchChange}
-      />
+      <div className="md:grid grid-cols-4  justify-between items-center mb-10 gap-10 md:space-y-0  space-y-5">
+        <TextField
+          fullWidth
+          size="small"
+          label="Search"
+          variant="outlined"
+          placeholder="Search Anything"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        <div className="col-span-3">
+          <SearchForm
+            setSearchedBranchData={setSearchedBranchData}
+            branchData={branchData}
+            setSearchTerm={setSearchTerm}
+          />
+        </div>
+      </div>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer
           sx={{
-            maxHeight: 440,
+            maxHeight: 600,
             overflow: "auto",
             "::-webkit-scrollbar": { width: "2px", height: "4px" },
             "::-webkit-scrollbar-thumb": {
@@ -164,7 +179,7 @@ const BranchDataTable = ({ branchData }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {branchData &&
+              {searchedBranchData &&
                 filteredRows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, rowIndex) => {
