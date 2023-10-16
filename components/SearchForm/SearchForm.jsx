@@ -1,6 +1,7 @@
 import axiosInstance from "@/utils/axiosInstance";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const SearchForm = ({ setBranchData, branchData }) => {
   const [branches, setBranches] = useState([]);
@@ -9,23 +10,18 @@ const SearchForm = ({ setBranchData, branchData }) => {
   const [selectedBranchId, setSelectedBranchId] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedServiceId, setSelectedServiceId] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    // axiosInstance.get("/get-services").then((res) => {
-    //   console.log(res);
-    // });
-    // // fetch all branch name data
-    // axiosInstance.get("/get-branches").then((res) => {
-    //   setBranches(res.data[1].map((branch) => branch));
-    // });
-    // // fetch all service data
-    // axiosInstance.get("/get-services").then((res) => {
-    //   setServices(res.data[1].map((service) => service));
-    // });
+    // fetch all branch name data
+    axiosInstance.get("/get-branches").then((res) => {
+      setBranches(res.data[1].map((branch) => branch));
+    });
+    // fetch all service data
+    axiosInstance.get("/get-services").then((res) => {
+      setServices(res.data[1].map((service) => service));
+    });
   }, []);
 
-  console.log(branches);
   const handleBranchChange = (event, newValue) => {
     setSelectedBranch(newValue);
     setSelectedBranchId(newValue?.id);
@@ -43,6 +39,10 @@ const SearchForm = ({ setBranchData, branchData }) => {
           const searchBranchAndServiceData = await axiosInstance.get(
             `/get-branch-contacts-list?branch_id=${selectedBranchId}&service_id=${selectedServiceId}`
           );
+          if (searchBranchAndServiceData.data.data.length === 0) {
+            toast.warning("This service is not available in this branch");
+            // setBranchData(branchData);
+          }
           setBranchData(searchBranchAndServiceData.data.data);
         } else if (selectedBranchId) {
           const searchBranchData = await axiosInstance.get(
@@ -114,13 +114,13 @@ const SearchForm = ({ setBranchData, branchData }) => {
           Search
         </Button>
       </form>
-      <TextField
+      {/* <TextField
         size="small"
         label="Search"
         variant="outlined"
         placeholder="Search Anything"
         value={searchValue}
-      />
+      /> */}
     </div>
   );
 };
