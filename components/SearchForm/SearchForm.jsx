@@ -2,7 +2,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const SearchForm = ({ setSearchedBranchData, branchData, setSearchTerm }) => {
+const SearchForm = ({ setBranchData, setSearchTerm }) => {
   const [branches, setBranches] = useState([]);
   const [services, setServices] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -41,22 +41,24 @@ const SearchForm = ({ setSearchedBranchData, branchData, setSearchTerm }) => {
             `/get-branch-contacts-list?branch_id=${selectedBranchId}&service_id=${selectedServiceId}`
           );
 
-          setSearchedBranchData(searchBranchAndServiceData.data.data);
+          setBranchData(searchBranchAndServiceData.data.data);
         } else if (selectedBranchId) {
           const searchBranchData = await axiosInstance.get(
             `/get-branch-contacts-list?branch_id=${selectedBranchId}`
           );
-          setSearchedBranchData(searchBranchData.data.data);
+          setBranchData(searchBranchData.data.data);
         } else if (selectedServiceId) {
           const searchServiceData = await axiosInstance.get(
             `/get-branch-contacts-list?service_id=${selectedServiceId}`
           );
-          setSearchedBranchData(searchServiceData.data.data);
+          setBranchData(searchServiceData.data.data);
         }
+      } else {
+        const searchAllData = await axiosInstance.get(
+          "/get-branch-contacts-list"
+        );
+        setBranchData(searchAllData.data.data);
       }
-      //  else {
-      //   setSearchedBranchData([...branchData]);
-      // }
     } catch (error) {
       // Handle errors here
       console.error("Error fetching search data:", error);
@@ -106,13 +108,15 @@ const SearchForm = ({ setSearchedBranchData, branchData, setSearchTerm }) => {
           renderInput={(params) => <TextField {...params} label="Service" />}
         />
 
-        <Button
-          variant="contained"
-          type="submit"
-          className="bg-[#0C4A9A] hover:bg-[#3C74BD] text-white font-semibold py-2 px-4 w-1/2 "
-        >
-          Search
-        </Button>
+        <div className="w-1/2 md:mx-0 mx-auto">
+          <Button
+            variant="contained"
+            type="submit"
+            className="w-full bg-[#0C4A9A] hover:bg-[#3C74BD] text-white font-semibold py-2 px-4 "
+          >
+            Search
+          </Button>
+        </div>
       </form>
     </>
   );

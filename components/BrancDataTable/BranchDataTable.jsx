@@ -12,7 +12,7 @@ import { ScaleLoader } from "react-spinners";
 import SearchForm from "../SearchForm/SearchForm";
 
 const columns = [
-  { id: "branchType", label: "Branch Type", minWidth: 120 },
+  { id: "branchType", label: "Branch Type", minWidth: 170 },
   { id: "officeName", label: "Office Name", minWidth: 170 },
   { id: "code", label: "\u00a0Code", minWidth: 100 },
   { id: "authorityContacts", label: "Authority Contacts", minWidth: 170 },
@@ -41,19 +41,15 @@ function createData(
   };
 }
 
-const BranchDataTable = ({ branchData }) => {
+const BranchDataTable = ({ branchData, setBranchData, }) => {
+
   // state variables
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(2000);
-  const [searchedBranchData, setSearchedBranchData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Update searchedBranchData whenever branchData changes
-    setSearchedBranchData([...branchData]);
-  }, [branchData, searchedBranchData]); // This will trigger the effect whenever branchData changes
   // Handle page change
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -65,7 +61,7 @@ const BranchDataTable = ({ branchData }) => {
     setPage(0);
   };
 
-  const rows = searchedBranchData.map((branchInfo) => {
+  const rows = branchData.map((branchInfo) => {
     const { name, code, type, incharge, address, branch_services, remark } =
       branchInfo;
 
@@ -119,7 +115,7 @@ const BranchDataTable = ({ branchData }) => {
 
   // Effect to handle error messages and loading state
   useEffect(() => {
-    if (searchedBranchData.length === 0) {
+    if (branchData.length === 0) {
       setError("This Service is Not Available in This Branch");
     } else if (filteredRows.length === 0) {
       setError("Search Not Match");
@@ -127,11 +123,11 @@ const BranchDataTable = ({ branchData }) => {
       setError("");
       setLoading(false);
     }
-  }, [searchedBranchData, filteredRows]);
+  }, [branchData, filteredRows]);
 
   return (
     <>
-      <div className="md:grid grid-cols-4  justify-between items-center mb-10 gap-10 md:space-y-0  space-y-5">
+      <div className="md:grid grid-cols-4 justify-between items-center mb-10 gap-10 md:space-y-0  space-y-5">
         <TextField
           fullWidth
           size="small"
@@ -143,8 +139,7 @@ const BranchDataTable = ({ branchData }) => {
         />
         <div className="col-span-3">
           <SearchForm
-            setSearchedBranchData={setSearchedBranchData}
-            branchData={branchData}
+            setBranchData={setBranchData}
             setSearchTerm={setSearchTerm}
           />
         </div>
@@ -179,7 +174,7 @@ const BranchDataTable = ({ branchData }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {searchedBranchData &&
+              {branchData &&
                 filteredRows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, rowIndex) => {
