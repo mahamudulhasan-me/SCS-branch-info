@@ -1,9 +1,8 @@
 import axiosInstance from "@/utils/axiosInstance";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
-const SearchForm = ({ setBranchData, branchData }) => {
+const SearchForm = ({ setBranchData }) => {
   const [branches, setBranches] = useState([]);
   const [services, setServices] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -39,10 +38,7 @@ const SearchForm = ({ setBranchData, branchData }) => {
           const searchBranchAndServiceData = await axiosInstance.get(
             `/get-branch-contacts-list?branch_id=${selectedBranchId}&service_id=${selectedServiceId}`
           );
-          if (searchBranchAndServiceData.data.data.length === 0) {
-            toast.warning("This service is not available in this branch");
-            // setBranchData(branchData);
-          }
+
           setBranchData(searchBranchAndServiceData.data.data);
         } else if (selectedBranchId) {
           const searchBranchData = await axiosInstance.get(
@@ -114,13 +110,6 @@ const SearchForm = ({ setBranchData, branchData }) => {
           Search
         </Button>
       </form>
-      {/* <TextField
-        size="small"
-        label="Search"
-        variant="outlined"
-        placeholder="Search Anything"
-        value={searchValue}
-      /> */}
     </div>
   );
 };

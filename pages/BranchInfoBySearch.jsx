@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 const BranchInfoBySearch = () => {
   const [branchData, setBranchData] = useState([]);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     axiosInstance.get("/get-branch-contacts-list").then((res) => {
@@ -15,11 +14,7 @@ const BranchInfoBySearch = () => {
 
   return (
     <div className="px-[5%] mt-16">
-      <SearchForm
-        setBranchData={setBranchData}
-        branchData={branchData}
-        setError={setError}
-      />
+      <SearchForm setBranchData={setBranchData} />
       <div className="my-10">
         <BranchDataTable branchData={branchData} />
       </div>

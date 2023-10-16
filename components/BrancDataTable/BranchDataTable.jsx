@@ -1,3 +1,4 @@
+import { TextField } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -6,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScaleLoader } from "react-spinners";
 
 const columns = [
@@ -40,14 +41,19 @@ function createData(
 }
 
 const BranchDataTable = ({ branchData }) => {
-  console.log(branchData);
+  // state variables
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
+  // Handle page change
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  // Handle rows per page change
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
@@ -79,80 +85,135 @@ const BranchDataTable = ({ branchData }) => {
     );
   });
 
+  // Filter rows based on search term
+  const filteredRows = rows.filter((row) =>
+    Object.values(row).some((value) => {
+      if (value === null || value === undefined) {
+        return false;
+      }
+      if (typeof value === "object") {
+        // Handle objects (e.g., services and contacts)
+        return Object.values(value).some((nestedValue) =>
+          nestedValue
+            .toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        );
+      }
+      return value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    })
+  );
+
+  // Handle search input change
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setPage(0); // Reset page to 0 when the search term changes
+    // Check if there are no matching results and set an error message
+  };
+
+  // Effect to handle error messages and loading state
+  useEffect(() => {
+    if (branchData.length === 0) {
+      setError("This Service is Not Available in This Branch");
+    } else if (filteredRows.length === 0) {
+      setError("Search Not Match");
+    } else {
+      setError("");
+      setLoading(false);
+    }
+  }, [branchData, filteredRows]);
+
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer
-        sx={{
-          maxHeight: 440,
-          overflow: "auto",
-          "::-webkit-scrollbar": { width: "2px", height: "3px" },
-          "::-webkit-scrollbar-thumb": {
-            backgroundColor: "#888",
-          },
-        }}
-      >
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  align="center"
-                  key={column.id}
-                  style={{
-                    minWidth: column.minWidth,
-                    backgroundColor: "#FDF4F5",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {branchData &&
-              rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, rowIndex) => {
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={rowIndex}
-                    >
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell key={column.id} align="center">
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
-          </TableBody>
-        </Table>
-        {branchData.length === 0 && (
-          <div className="w-full flex justify-center items-center py-10">
-            <ScaleLoader color="#36d7b7" />
-          </div>
-        )}
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        className="bg-[#FDF4F5]"
+    <>
+      <TextField
+        className="float-right"
+        size="small"
+        label="Search"
+        variant="outlined"
+        placeholder="Search Anything"
+        value={searchTerm}
+        onChange={handleSearchChange}
       />
-    </Paper>
+      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <TableContainer
+          sx={{
+            maxHeight: 440,
+            overflow: "auto",
+            "::-webkit-scrollbar": { width: "2px", height: "3px" },
+            "::-webkit-scrollbar-thumb": {
+              backgroundColor: "#888",
+            },
+          }}
+        >
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    align="center"
+                    key={column.id}
+                    style={{
+                      minWidth: column.minWidth,
+                      backgroundColor: "#FDF4F5",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {branchData &&
+                filteredRows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, rowIndex) => {
+                    return (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={rowIndex}
+                      >
+                        {columns.map((column) => {
+                          const value = row[column.id];
+                          return (
+                            <TableCell key={column.id} align="center">
+                              {column.format && typeof value === "number"
+                                ? column.format(value)
+                                : value}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  })}
+            </TableBody>
+          </Table>
+          {loading ? (
+            <p className="w-full flex justify-center items-center py-8 ">
+              <ScaleLoader color="#36d7b7" />
+            </p>
+          ) : (
+            error && (
+              <p className="w-full flex justify-center items-center py-10 text-orange-500 text-lg">
+                {error}
+              </p>
+            )
+          )}
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          className="bg-[#FDF4F5]"
+        />
+      </Paper>
+    </>
   );
 };
 
