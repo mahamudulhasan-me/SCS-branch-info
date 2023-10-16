@@ -43,7 +43,7 @@ function createData(
 const BranchDataTable = ({ branchData }) => {
   // state variables
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(2000);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -126,7 +126,7 @@ const BranchDataTable = ({ branchData }) => {
   return (
     <>
       <TextField
-        className="float-right"
+        className="float-right mb-4"
         size="small"
         label="Search"
         variant="outlined"
@@ -139,7 +139,7 @@ const BranchDataTable = ({ branchData }) => {
           sx={{
             maxHeight: 440,
             overflow: "auto",
-            "::-webkit-scrollbar": { width: "2px", height: "3px" },
+            "::-webkit-scrollbar": { width: "2px", height: "4px" },
             "::-webkit-scrollbar-thumb": {
               backgroundColor: "#888",
             },
@@ -203,7 +203,7 @@ const BranchDataTable = ({ branchData }) => {
           )}
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[2000, 25, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}

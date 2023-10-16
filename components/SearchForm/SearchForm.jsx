@@ -55,7 +55,6 @@ const SearchForm = ({ setBranchData }) => {
     } catch (error) {
       // Handle errors here
       console.error("Error fetching search data:", error);
-      // You can also set an error state or display an error message to the user
     }
   };
 
@@ -68,9 +67,9 @@ const SearchForm = ({ setBranchData }) => {
     getSearchData();
   };
   return (
-    <div className="flex justify-between items-center  mb-8">
+    <div className="flex justify-between items-center  mb-6">
       <form
-        className="lg:w-2/3 flex lg:flex-nowrap flex-wrap justify-between items-center md:gap-10 gap-5"
+        className="lg:w-2/3 w-full grid lg:grid-cols-3 grid-cols-1  justify-center items-center md:gap-10 gap-5"
         onSubmit={handleSubmit}
       >
         <Autocomplete
