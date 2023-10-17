@@ -1,12 +1,13 @@
 import BranchDataTable from "@/components/BrancDataTable/BranchDataTable";
-import axiosInstance from "@/utils/axiosInstance";
+
 import { useEffect, useState } from "react";
+import axiosInstance from "./api/axios";
 
 const BranchInfoBySearch = () => {
   const [branchData, setBranchData] = useState([]);
 
   useEffect(() => {
-    axiosInstance.get("/get-branch-contacts-list").then((res) => {
+    axiosInstance.get(`/get-branch-contacts-list`).then((res) => {
       setBranchData(res.data.data);
     });
   }, []);

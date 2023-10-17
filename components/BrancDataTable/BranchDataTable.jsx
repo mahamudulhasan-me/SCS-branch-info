@@ -41,8 +41,7 @@ function createData(
   };
 }
 
-const BranchDataTable = ({ branchData, setBranchData, }) => {
-
+const BranchDataTable = ({ branchData, setBranchData }) => {
   // state variables
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(2000);
@@ -83,7 +82,7 @@ const BranchDataTable = ({ branchData, setBranchData, }) => {
       incharge,
       serviceAndContacts,
       address,
-      remark || "N/A"
+      remark
     );
   });
 
