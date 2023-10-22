@@ -1,14 +1,19 @@
-import scsLogo from "@/public/scsLogo.jpg";
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 
 const Header = () => {
   return (
-    <div className=" px-[5%] flex justify-between items-center shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] py-4">
+    <div className=" px-[5%] flex items-center gap-4 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] h-20">
       <Link href="/">
-        <Image width={50} height={20} src={scsLogo} alt="SCS Logo" />
+        <img
+          src="https://contacts.sundarban.delivery/scsLogo.png"
+          width="50"
+          alt="SCS Logo"
+        ></img>
       </Link>
-      <div className="flex items-center gap-4 "></div>
+      <h2 className="font-semibold text-gray-800 md:text-2xl text-xl">
+        Sundarban Courier Service (Pvt.) Ltd.
+      </h2>
     </div>
   );
 };

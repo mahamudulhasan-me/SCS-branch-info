@@ -1,4 +1,4 @@
-
+/* eslint-disable react-hooks/exhaustive-deps */
 import axiosInstance from "@/pages/api/axios";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ const SearchForm = ({ setBranchData, setSearchTerm }) => {
   const [selectedBranchId, setSelectedBranchId] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedServiceId, setSelectedServiceId] = useState(null);
+  const [activeFetch, setActiveFetch] = useState(false);
 
   useEffect(() => {
     // fetch all branch name data
@@ -25,12 +26,14 @@ const SearchForm = ({ setBranchData, setSearchTerm }) => {
   const handleBranchChange = (event, newValue) => {
     setSelectedBranch(newValue);
     setSelectedBranchId(newValue?.id);
+    setActiveFetch(true);
     setSearchTerm("");
   };
 
   const handleServiceChange = (event, newValue) => {
     setSelectedService(newValue);
     setSelectedServiceId(newValue?.service_id);
+    setActiveFetch(true);
     setSearchTerm("");
   };
 
@@ -55,10 +58,12 @@ const SearchForm = ({ setBranchData, setSearchTerm }) => {
           setBranchData(searchServiceData.data.data);
         }
       } else {
-        const searchAllData = await axiosInstance.get(
-          "/get-branch-contacts-list"
-        );
-        setBranchData(searchAllData.data.data);
+        if (activeFetch) {
+          const searchAllData = await axiosInstance.get(
+            "/get-branch-contacts-list"
+          );
+          setBranchData(searchAllData.data.data);
+        }
       }
     } catch (error) {
       // Handle errors here
@@ -77,16 +82,17 @@ const SearchForm = ({ setBranchData, setSearchTerm }) => {
   return (
     <>
       <form
-        className=" w-full grid lg:grid-cols-3 grid-cols-1  justify-center items-center md:gap-10 gap-5"
+        className=" w-full grid md:grid-cols-3 grid-cols-1  justify-center items-center md:gap-10 gap-5"
         onSubmit={handleSubmit}
       >
         <Autocomplete
           fullWidth
           size="small"
           options={branches}
-          getOptionLabel={(option) => option.name} // Display 'name' property in the input field
+          getOptionLabel={(option) => option.name}
           value={selectedBranch}
           onChange={handleBranchChange}
+          getOptionSelected={(option, value) => option.id === value.id}
           filterOptions={(options, { inputValue }) =>
             options.filter((option) =>
               option.name.toLowerCase().startsWith(inputValue.toLowerCase())
@@ -94,16 +100,19 @@ const SearchForm = ({ setBranchData, setSearchTerm }) => {
           }
           renderInput={(params) => <TextField {...params} label="Branch" />}
         />
+
         <Autocomplete
           fullWidth
           size="small"
           options={services}
-          getOptionLabel={(option) => option.details} // Display 'details' property in the input field
+          getOptionLabel={(option) => option.service_name} // Display 'details' property in the input field
           value={selectedService}
           onChange={handleServiceChange}
           filterOptions={(options, { inputValue }) =>
             options.filter((option) =>
-              option.details.toLowerCase().startsWith(inputValue.toLowerCase())
+              option.service_name
+                .toLowerCase()
+                .startsWith(inputValue.toLowerCase())
             )
           }
           renderInput={(params) => <TextField {...params} label="Service" />}

@@ -7,7 +7,7 @@ const BranchInfoBySearch = () => {
   const [branchData, setBranchData] = useState([]);
 
   useEffect(() => {
-    axiosInstance.get(`/get-branch-contacts-list`).then((res) => {
+    axiosInstance.get("/get-branch-contacts-list").then((res) => {
       setBranchData(res.data.data);
     });
   }, []);

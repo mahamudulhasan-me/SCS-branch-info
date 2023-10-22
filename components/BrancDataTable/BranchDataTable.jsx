@@ -8,16 +8,16 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
-import { ScaleLoader } from "react-spinners";
+import LoaderSkeleton from "../LoaderSkeleton/LoaderSkeleton";
 import SearchForm from "../SearchForm/SearchForm";
 
 const columns = [
-  { id: "branchType", label: "Branch Type", minWidth: 170 },
-  { id: "officeName", label: "Office Name", minWidth: 170 },
+  { id: "branchType", label: "Branch Type", minWidth: 140 },
+  { id: "officeName", label: "Office Name", minWidth: 140 },
   { id: "code", label: "\u00a0Code", minWidth: 100 },
-  { id: "authorityContacts", label: "Authority Contacts", minWidth: 170 },
-  { id: "serviceAndContacts", label: "Service & Contacts", minWidth: 170 },
-  { id: "address", label: "Address", minWidth: 170 },
+  { id: "authorityContacts", label: "Authority Contacts", minWidth: 140 },
+  { id: "serviceAndContacts", label: "Service & Contacts", minWidth: 210 },
+  { id: "address", label: "Address", minWidth: 200 },
   { id: "remarks", label: "Remarks", minWidth: 170 },
 ];
 
@@ -61,45 +61,69 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
   };
 
   const rows = branchData.map((branchInfo) => {
-    const { name, code, type, incharge, address, branch_services, remark } =
-      branchInfo;
+    const {
+      name,
+      code,
+      type,
+      branch_incharge: { name: branchInChargeName },
+      address,
+      branch_services,
+      remark,
+    } = branchInfo;
 
     const serviceAndContacts = branch_services?.map((services) => {
       const { id, contact, service } = services;
-      return (
-        <>
-          <span key={id}>
-            {service?.service_name}: <br /> {contact}
+      const serviceAndContacTable = (
+        <p
+          key={id}
+          className="w-full h-full border border-slate-400 flex justify-between items-center "
+        >
+          <span className="p-2 border-r w-1/2 border-gray-400">
+            {service?.service_name}
           </span>{" "}
-          <br />
-        </>
+          <span className="p-2">{contact}</span>
+        </p>
       );
+
+      return serviceAndContacTable;
+      // return `${service?.service_name}: ${contact}`; // Store as a plain string
     });
+    // .join("\n"); // Join the strings to a newline-separated string
+
     return createData(
       type,
       name,
       code,
-      incharge,
-      serviceAndContacts,
+      branchInChargeName,
+      serviceAndContacts, // Store as a plain string
       address,
       remark
     );
   });
 
   // Filter rows based on search term
+
   const filteredRows = rows.filter((row) =>
     Object.values(row).some((value) => {
       if (value === null || value === undefined) {
         return false;
       }
+      if (Array.isArray(value)) {
+        // Handle arrays of objects (e.g., services and contacts)
+        return value.some((nestedObject) => {
+          return Object.values(nestedObject).some((nestedValue) => {
+            if (nestedValue === null || nestedValue === undefined) {
+              return false;
+            }
+            return nestedValue
+              .toString()
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase());
+          });
+        });
+      }
       if (typeof value === "object") {
-        // Handle objects (e.g., services and contacts)
-        return Object.values(value).some((nestedValue) =>
-          nestedValue
-            .toString()
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        );
+        // Handle other objects if necessary
       }
       return value.toString().toLowerCase().includes(searchTerm.toLowerCase());
     })
@@ -126,7 +150,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
 
   return (
     <>
-      <div className="md:grid grid-cols-4 justify-between items-center mb-10 gap-10 md:space-y-0  space-y-5">
+      <div className="md:grid md:grid-cols-4 justify-between items-center mb-10 gap-10 md:space-y-0  space-y-5">
         <TextField
           fullWidth
           size="small"
@@ -136,7 +160,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
           value={searchTerm}
           onChange={handleSearchChange}
         />
-        <div className="col-span-3">
+        <div className="md:col-span-3">
           <SearchForm
             setBranchData={setBranchData}
             setSearchTerm={setSearchTerm}
@@ -148,10 +172,12 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
           sx={{
             maxHeight: 600,
             overflow: "auto",
-            "::-webkit-scrollbar": { width: "2px", height: "4px" },
+            "::-webkit-scrollbar": { width: "4px", height: "5px" },
             "::-webkit-scrollbar-thumb": {
               backgroundColor: "#888",
             },
+            border: "1px solid #94a3b8",
+            borderRadius: "5px",
           }}
         >
           <Table stickyHeader aria-label="sticky table">
@@ -165,6 +191,10 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                       minWidth: column.minWidth,
                       backgroundColor: "#FDF4F5",
                       fontWeight: "bold",
+                      fontSize: "1rem",
+                      // borderTop: "2px solid #ddd",
+                      borderRight: "1px solid #94a3b8", // Horizontal borders
+                      color: "#1e293b",
                     }}
                   >
                     {column.label}
@@ -183,11 +213,23 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                         role="checkbox"
                         tabIndex={-1}
                         key={rowIndex}
+                        sx={{
+                          "&:not(:last-child) td": {
+                            borderBottom: "1px solid #94a3b8", // Horizontal borders
+                          },
+                        }}
                       >
                         {columns.map((column) => {
                           const value = row[column.id];
                           return (
-                            <TableCell key={column.id} align="center">
+                            <TableCell
+                              key={column.id}
+                              align="center"
+                              sx={{
+                                borderRight: "1px solid #94a3b8", // Vertical borders
+                                color: "#1e293b",
+                              }}
+                            >
                               {column.format && typeof value === "number"
                                 ? column.format(value)
                                 : value}
@@ -200,9 +242,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
             </TableBody>
           </Table>
           {loading ? (
-            <p className="w-full flex justify-center items-center py-8 ">
-              <ScaleLoader color="#36d7b7" />
-            </p>
+            <LoaderSkeleton />
           ) : (
             error && (
               <p className="w-full flex justify-center items-center py-10 text-orange-500 text-lg">
@@ -219,6 +259,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{ border: "1px solid #94a3b8", borderRadius: "5px" }}
           className="bg-[#FDF4F5]"
         />
       </Paper>
