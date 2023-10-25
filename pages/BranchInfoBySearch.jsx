@@ -13,7 +13,7 @@ const BranchInfoBySearch = () => {
   }, []);
 
   return (
-    <div className="px-[5%] mt-16">
+    <div className="px-[5%]">
       <BranchDataTable branchData={branchData} setBranchData={setBranchData} />
     </div>
   );

@@ -15,7 +15,7 @@ const columns = [
   { id: "branchType", label: "Branch Type", minWidth: 140 },
   { id: "officeName", label: "Office Name", minWidth: 140 },
   { id: "code", label: "\u00a0Code", minWidth: 100 },
-  { id: "authorityContacts", label: "Authority Contacts", minWidth: 140 },
+  { id: "authorityContacts", label: "Authority Contacts", minWidth: 180 },
   { id: "serviceAndContacts", label: "Service & Contacts", minWidth: 210 },
   { id: "address", label: "Address", minWidth: 200 },
   { id: "remarks", label: "Remarks", minWidth: 170 },
@@ -59,75 +59,59 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
   const rows = branchData.map((branchInfo) => {
     const {
       name,
       code,
       type,
-      branch_incharge: { name: branchInChargeName },
+      branch_incharge,
       address,
       branch_services,
       remark,
     } = branchInfo;
 
-    const serviceAndContacts = branch_services?.map((services) => {
-      const { id, contact, service } = services;
-      const serviceAndContacTable = (
-        <p
-          key={id}
-          className="w-full h-full border border-slate-400 flex justify-between items-center "
-        >
-          <span className="p-2 border-r w-1/2 border-gray-400">
-            {service?.service_name}
-          </span>{" "}
-          <span className="p-2">{contact}</span>
-        </p>
-      );
+    // Extract names and contacts of all incharges from branch_incharge
+    const inChargeDetails =
+      branch_incharge && branch_incharge.length > 0
+        ? branch_incharge
+            .filter(
+              (incharge) => incharge?.user?.name || incharge?.user?.contact
+            ) // Filter out items where both name and contact are null
+            .map(
+              (incharge) =>
+                `${incharge?.user?.name || ""} ${incharge?.user?.contact || ""}`
+            )
+            .join("\n")
+        : "";
 
-      return serviceAndContacTable;
-      // return `${service?.service_name}: ${contact}`; // Store as a plain string
-    });
-    // .join("\n"); // Join the strings to a newline-separated string
+    const serviceAndContacts = branch_services
+      ?.map((services) => {
+        const { id, contact, service } = services;
+        return `${service?.service_name}: ${contact}`;
+      })
+      .join("\n");
+
+    // const remarkOrStatus = status ? remark : "Inactive";
 
     return createData(
       type,
       name,
       code,
-      branchInChargeName,
-      serviceAndContacts, // Store as a plain string
+      inChargeDetails,
+      serviceAndContacts,
       address,
       remark
     );
   });
-
   // Filter rows based on search term
+  const filteredRows = rows.filter((row) => {
+    const flattenedRow = Object.values(row)
+      .filter((value) => value !== undefined && value !== null)
+      .join(" ")
+      .toLowerCase();
 
-  const filteredRows = rows.filter((row) =>
-    Object.values(row).some((value) => {
-      if (value === null || value === undefined) {
-        return false;
-      }
-      if (Array.isArray(value)) {
-        // Handle arrays of objects (e.g., services and contacts)
-        return value.some((nestedObject) => {
-          return Object.values(nestedObject).some((nestedValue) => {
-            if (nestedValue === null || nestedValue === undefined) {
-              return false;
-            }
-            return nestedValue
-              .toString()
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase());
-          });
-        });
-      }
-      if (typeof value === "object") {
-        // Handle other objects if necessary
-      }
-      return value.toString().toLowerCase().includes(searchTerm.toLowerCase());
-    })
-  );
+    return flattenedRow.includes(searchTerm.toLowerCase());
+  });
 
   // Handle search input change
   const handleSearchChange = (event) => {
@@ -150,7 +134,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
 
   return (
     <>
-      <div className="md:grid md:grid-cols-4 justify-between items-center mb-10 gap-10 md:space-y-0  space-y-5">
+      <div className="md:grid md:grid-cols-4 justify-between items-center gap-10 md:space-y-0  space-y-5 my-8">
         <TextField
           fullWidth
           size="small"
@@ -191,8 +175,8 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                       minWidth: column.minWidth,
                       backgroundColor: "#FDF4F5",
                       fontWeight: "bold",
-                      fontSize: "1rem",
-                      // borderTop: "2px solid #ddd",
+                      // fontSize: "0.9rem",
+                      borderBottom: "1px solid #94a3b8",
                       borderRight: "1px solid #94a3b8", // Horizontal borders
                       color: "#1e293b",
                     }}
@@ -202,6 +186,8 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                 ))}
               </TableRow>
             </TableHead>
+            {/* // Inside the TableBody component of BranchDataTable component */}
+
             <TableBody>
               {branchData &&
                 filteredRows
@@ -226,13 +212,55 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                               key={column.id}
                               align="center"
                               sx={{
-                                borderRight: "1px solid #94a3b8", // Vertical borders
+                                borderRight: "1px solid #94a3b8",
                                 color: "#1e293b",
                               }}
                             >
-                              {column.format && typeof value === "number"
-                                ? column.format(value)
-                                : value}
+                              {column.id === "serviceAndContacts" && value
+                                ? // Custom rendering for "Service & Contacts" column
+                                  value
+                                    .split("\n")
+                                    .map((serviceContact, index) => {
+                                      const [service, contact] =
+                                        serviceContact.split(": "); // Split by ": " to get service and contact
+                                      return (
+                                        <p
+                                          key={index}
+                                          className="w-full h-full border border-slate-400 flex justify-between items-center"
+                                        >
+                                          <span className="p-1 border-r w-1/2 border-gray-400">
+                                            {service}
+                                          </span>{" "}
+                                          {contact &&
+                                            contact !== "null" && ( // Check if contact is not null or "null" string
+                                              <span className="p-1">
+                                                {contact}
+                                              </span>
+                                            )}
+                                        </p>
+                                      );
+                                    })
+                                : column.id === "authorityContacts" && value
+                                ? // Custom rendering for "Authority Contacts" column
+                                  value
+                                    .split("\n")
+                                    .map((authorityContact, index) => {
+                                      const [name, contact] =
+                                        authorityContact.split(": "); // Split by ": " to get name and contact
+                                      return (
+                                        <>
+                                          <div key={index} className="mb-2">
+                                            <span>{name}</span> <br />
+                                            {contact && contact}
+                                          </div>
+                                        </>
+                                      );
+                                    })
+                                : column.format && typeof value === "number"
+                                ? // Format number if required
+                                  column.format(value)
+                                : // Default rendering for other columns
+                                  value}
                             </TableCell>
                           );
                         })}

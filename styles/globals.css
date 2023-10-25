@@ -2,8 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* body {
-  font-family: "Ubuntu", sans-serif;
-} */
+.css-1jkqa26-MuiTableCell-root {
+  padding: 8px !important;
+}
 
-/* Rest of your global styles */
+/* .css-dyxlk-MuiTableCell-root {
+  padding: 16px 0px !important;
+} */
