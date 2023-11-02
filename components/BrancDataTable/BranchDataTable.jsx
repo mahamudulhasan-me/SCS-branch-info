@@ -178,7 +178,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                       // fontSize: "0.9rem",
                       borderBottom: "1px solid #94a3b8",
                       borderRight: "1px solid #94a3b8", // Horizontal borders
-                      color: "#1e293b",
+                      // color: "#1e293b",
                     }}
                   >
                     {column.label}
@@ -213,7 +213,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                               align="center"
                               sx={{
                                 borderRight: "1px solid #94a3b8",
-                                color: "#1e293b",
+                                // color: "#1e293b",
                               }}
                             >
                               {column.id === "serviceAndContacts" && value
