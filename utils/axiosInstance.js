@@ -1,9 +1,7 @@
 import axios from "axios";
 
-const baseURL = "https://branchcontacts.sundarban.delivery/api";
-
 const axiosInstance = axios.create({
-  baseURL: baseURL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
 });
 
 export default axiosInstance;

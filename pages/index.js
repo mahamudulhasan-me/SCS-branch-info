@@ -1,12 +1,12 @@
 import Header from "@/components/Header";
-import { Oswald } from "next/font/google";
+import { Roboto } from "next/font/google";
 
 import Head from "next/head";
 import BranchInfoBySearch from "./BranchInfoBySearch";
 
-const oswald = Oswald({
+const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500", "700"],
   style: ["normal"],
 });
 
@@ -16,7 +16,7 @@ export default function Home() {
       <Head>
         <title>Contacts | Sundarban Courier Service</title>
       </Head>
-      <main className={oswald.className}>
+      <main className={roboto.className}>
         <Header />
         <BranchInfoBySearch />
       </main>

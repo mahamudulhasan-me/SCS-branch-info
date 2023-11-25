@@ -9,3 +9,12 @@
 /* .css-dyxlk-MuiTableCell-root {
   padding: 16px 0px !important;
 } */
+/* .css-v9gx0o-MuiTableCell-root,
+.css-z97o3a-MuiTableCell-root,
+.css-yn1r9p-MuiTableCell-root {
+  text-align: center !important;
+  padding: 5px !important;
+} */
+.subBranch-table {
+  display: table !important;
+}

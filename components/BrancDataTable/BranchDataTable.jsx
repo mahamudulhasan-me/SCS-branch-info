@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -10,15 +10,16 @@ import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import LoaderSkeleton from "../LoaderSkeleton/LoaderSkeleton";
 import SearchForm from "../SearchForm/SearchForm";
+import SubTable from "./SubTable";
 
 const columns = [
-  { id: "branchType", label: "Branch Type", minWidth: 140 },
-  { id: "officeName", label: "Office Name", minWidth: 140 },
-  { id: "code", label: "\u00a0Code", minWidth: 100 },
-  { id: "authorityContacts", label: "Authority Contacts", minWidth: 180 },
-  { id: "serviceAndContacts", label: "Service & Contacts", minWidth: 210 },
-  { id: "address", label: "Address", minWidth: 200 },
-  { id: "remarks", label: "Remarks", minWidth: 170 },
+  { id: "branchType", label: "Branch Type" },
+  { id: "officeName", label: "Office Name", maxWidth: 160 },
+  { id: "code", label: "\u00a0Code" },
+  { id: "authorityContacts", label: "Authority Contacts", maxWidth: 180 },
+  { id: "serviceAndContacts", label: "Service & Contacts", maxWidth: 250 },
+  { id: "address", label: "Address", maxWidth: 250 },
+  { id: "remarks", label: "Remarks", maxWidth: 140 },
 ];
 
 function createData(
@@ -79,19 +80,23 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
             ) // Filter out items where both name and contact are null
             .map(
               (incharge) =>
-                `${incharge?.user?.name || ""} ${incharge?.user?.contact || ""}`
+                `${incharge?.user?.name || ""} : ${
+                  incharge?.user?.role?.name || ""
+                } : ${incharge?.contact || ""}`
             )
             .join("\n")
         : "";
 
     const serviceAndContacts = branch_services
       ?.map((services) => {
-        const { id, contact, service } = services;
-        return `${service?.service_name}: ${contact}`;
+        const { contact, service } = services;
+        return `${service?.service_name} : ${contact}`;
       })
       .join("\n");
-
     // const remarkOrStatus = status ? remark : "Inactive";
+    // const strongRemark = <strong>{remark}</strong>;
+    // const branchType = type === "Branch" ? <strong>{type}</strong> : type;
+    // const officeName = type === "Branch" ? <strong>{name}</strong> : name;
 
     return createData(
       type,
@@ -115,16 +120,15 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
 
   // Handle search input change
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setPage(0); // Reset page to 0 when the search term changes
-    // Check if there are no matching results and set an error message
+    event.preventDefault();
+    const currentSearchValue = event.target.search.value;
+    setSearchTerm(currentSearchValue);
+    setPage(0);
   };
 
   // Effect to handle error messages and loading state
   useEffect(() => {
-    if (branchData.length === 0) {
-      setError("This Service is Not Available in This Branch");
-    } else if (filteredRows.length === 0) {
+    if (filteredRows.length === 0) {
       setError("Search Not Match");
     } else {
       setError("");
@@ -134,27 +138,35 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
 
   return (
     <>
-      <div className="md:grid md:grid-cols-4 justify-between items-center gap-10 md:space-y-0  space-y-5 my-8">
+      <form
+        onSubmit={handleSearchChange}
+        className="md:grid lg:grid-cols-4 md:grid-cols-3 justify-between items-center gap-10 md:space-y-0  space-y-5 my-8"
+      >
+        <SearchForm setBranchData={setBranchData} />
+
         <TextField
           fullWidth
           size="small"
           label="Search"
           variant="outlined"
+          name="search"
           placeholder="Search Anything"
-          value={searchTerm}
-          onChange={handleSearchChange}
         />
-        <div className="md:col-span-3">
-          <SearchForm
-            setBranchData={setBranchData}
-            setSearchTerm={setSearchTerm}
-          />
+        <div className="w-4/5 md:w-2/3 md:mx-0 mx-auto">
+          <Button
+            variant="contained"
+            type="submit"
+            className="w-full bg-[#0C4A9A] hover:bg-[#3C74BD] text-white font-semibold py-2 px-4 "
+          >
+            Search
+          </Button>
         </div>
-      </div>
+      </form>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer
           sx={{
             maxHeight: 600,
+            // width: fullWidth,
             overflow: "auto",
             "::-webkit-scrollbar": { width: "4px", height: "5px" },
             "::-webkit-scrollbar-thumb": {
@@ -186,6 +198,7 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                 ))}
               </TableRow>
             </TableHead>
+
             {/* // Inside the TableBody component of BranchDataTable component */}
 
             <TableBody>
@@ -212,55 +225,70 @@ const BranchDataTable = ({ branchData, setBranchData }) => {
                               key={column.id}
                               align="center"
                               sx={{
+                                minWidth: column.minWidth,
+                                maxWidth: column.maxWidth,
                                 borderRight: "1px solid #94a3b8",
                                 // color: "#1e293b",
+                                fontWeight:
+                                  (column.id === "branchType" &&
+                                    row.branchType === "Branch") ||
+                                  (column.id === "branchType" &&
+                                    row.branchType === "Sub-Branch") ||
+                                  (column.id === "officeName" &&
+                                    row.branchType === "Branch") ||
+                                  (column.id === "officeName" &&
+                                    row.branchType === "Sub-Branch")
+                                    ? "bold"
+                                    : "normal",
                               }}
                             >
-                              {column.id === "serviceAndContacts" && value
-                                ? // Custom rendering for "Service & Contacts" column
-                                  value
-                                    .split("\n")
-                                    .map((serviceContact, index) => {
-                                      const [service, contact] =
-                                        serviceContact.split(": "); // Split by ": " to get service and contact
-                                      return (
-                                        <p
-                                          key={index}
-                                          className="w-full h-full border border-slate-400 flex justify-between items-center"
-                                        >
-                                          <span className="p-1 border-r w-1/2 border-gray-400">
-                                            {service}
-                                          </span>{" "}
-                                          {contact &&
-                                            contact !== "null" && ( // Check if contact is not null or "null" string
-                                              <span className="p-1">
-                                                {contact}
-                                              </span>
-                                            )}
+                              {column.id === "serviceAndContacts" && value ? (
+                                // Custom rendering for "Service & Contacts" column
+                                value
+                                  .split("\n")
+                                  .map((serviceContact, index) => {
+                                    const [service, contact] =
+                                      serviceContact.split(": "); // Split by ": " to get service and contact
+                                    return (
+                                      <SubTable
+                                        key={index}
+                                        cellData1={service}
+                                        cellData2={contact}
+                                      />
+                                    );
+                                  })
+                              ) : column.id === "authorityContacts" && value ? (
+                                // Custom rendering for "Authority Contacts" column
+                                value
+                                  .split("\n")
+                                  .map((authorityContact, index) => {
+                                    const [name, role, contact] =
+                                      authorityContact.split(":"); // Split by ": " to get name and contact
+                                    return (
+                                      <div key={index} className="mb-2">
+                                        <p>
+                                          <strong>{name}</strong>
+                                          {role && (
+                                            <span className="text-slate-900">
+                                              <br />({role})
+                                            </span>
+                                          )}
                                         </p>
-                                      );
-                                    })
-                                : column.id === "authorityContacts" && value
-                                ? // Custom rendering for "Authority Contacts" column
-                                  value
-                                    .split("\n")
-                                    .map((authorityContact, index) => {
-                                      const [name, contact] =
-                                        authorityContact.split(": "); // Split by ": " to get name and contact
-                                      return (
-                                        <>
-                                          <div key={index} className="mb-2">
-                                            <span>{name}</span> <br />
-                                            {contact && contact}
-                                          </div>
-                                        </>
-                                      );
-                                    })
-                                : column.format && typeof value === "number"
-                                ? // Format number if required
-                                  column.format(value)
-                                : // Default rendering for other columns
-                                  value}
+
+                                        {contact &&
+                                          contact.split(",").join("\n")}
+                                      </div>
+                                    );
+                                  })
+                              ) : column.format && typeof value === "number" ? (
+                                // Format number if required
+                                column.format(value)
+                              ) : // Default rendering for other columns
+                              column.id === "remarks" ? (
+                                <strong>{value}</strong>
+                              ) : (
+                                value
+                              )}
                             </TableCell>
                           );
                         })}
